@@ -87,6 +87,8 @@ const DashboardLayout = ({ children, role = 'staff' }: DashboardLayoutProps) => 
     menuItems.push({ icon: Users, label: "Organization", path: "/organization" });
   }
 
+  const isActive = (path: string) => window.location.pathname === path;
+
   const getInitials = () => {
     if (profile?.first_name && profile?.last_name) {
       return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
@@ -154,17 +156,20 @@ const DashboardLayout = ({ children, role = 'staff' }: DashboardLayoutProps) => 
         {/* Sidebar */}
         <aside className="hidden md:flex w-64 flex-col fixed h-[calc(100vh-4rem)] border-r bg-card">
           <nav className="flex-1 space-y-1 p-4">
-            {menuItems.map((item) => (
-              <Button
-                key={item.path}
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => navigate(item.path)}
-              >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.label}
-              </Button>
-            ))}
+            {menuItems.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <Button
+                  key={item.path}
+                  variant={active ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => navigate(item.path)}
+                >
+                  <item.icon className="mr-3 h-5 w-5" />
+                  {item.label}
+                </Button>
+              );
+            })}
           </nav>
         </aside>
 
@@ -177,18 +182,21 @@ const DashboardLayout = ({ children, role = 'staff' }: DashboardLayoutProps) => 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t z-50">
         <div className="grid grid-cols-5 gap-1 p-2">
-          {menuItems.slice(0, 5).map((item) => (
-            <Button
-              key={item.path}
-              variant="ghost"
-              size="sm"
-              className="flex flex-col h-auto py-2"
-              onClick={() => navigate(item.path)}
-            >
-              <item.icon className="h-5 w-5 mb-1" />
-              <span className="text-xs">{item.label}</span>
-            </Button>
-          ))}
+          {menuItems.slice(0, 5).map((item) => {
+            const active = isActive(item.path);
+            return (
+              <Button
+                key={item.path}
+                variant={active ? "secondary" : "ghost"}
+                size="sm"
+                className="flex flex-col h-auto py-2"
+                onClick={() => navigate(item.path)}
+              >
+                <item.icon className="h-5 w-5 mb-1" />
+                <span className="text-xs">{item.label}</span>
+              </Button>
+            );
+          })}
         </div>
       </nav>
     </div>
