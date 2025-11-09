@@ -12,6 +12,7 @@ import MeetingRooms from "./pages/MeetingRooms";
 import Leave from "./pages/Leave";
 import Organization from "./pages/Organization";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/meeting-rooms" element={<MeetingRooms />} />
           <Route path="/leave" element={<Leave />} />
           <Route path="/organization" element={<Organization />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
