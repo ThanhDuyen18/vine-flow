@@ -7,6 +7,7 @@ import TeamsManagement from "@/components/organization/TeamsManagement";
 import ShiftsManagement from "@/components/organization/ShiftsManagement";
 import UsersManagement from "@/components/organization/UsersManagement";
 import AttendanceSettings from "@/components/organization/AttendanceSettings";
+import SalaryManagement from "@/components/organization/SalaryManagement";
 
 const Organization = () => {
   const [role, setRole] = useState<UserRole>('staff');
@@ -47,6 +48,7 @@ const Organization = () => {
             <TabsTrigger value="teams" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Teams</TabsTrigger>
             <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Users</TabsTrigger>
             <TabsTrigger value="shifts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Shifts</TabsTrigger>
+            <TabsTrigger value="salary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Salary & Attendance</TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Attendance Settings</TabsTrigger>
           </TabsList>
           <TabsContent value="teams" className="mt-6">
@@ -57,6 +59,9 @@ const Organization = () => {
           </TabsContent>
           <TabsContent value="shifts" className="mt-6">
             <ShiftsManagement />
+          </TabsContent>
+          <TabsContent value="salary" className="mt-6">
+            <SalaryManagement />
           </TabsContent>
           <TabsContent value="settings" className="mt-6">
             <AttendanceSettings />

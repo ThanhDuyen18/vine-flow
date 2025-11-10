@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, MapPin, Users, Monitor } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import CreateRoomDialog from "./CreateRoomDialog";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
 
 const RoomList = ({ role }: { role: UserRole }) => {
   const [rooms, setRooms] = useState<any[]>([]);
@@ -34,7 +35,13 @@ const RoomList = ({ role }: { role: UserRole }) => {
   }, []);
 
   if (loading) {
-    return <div className="text-muted-foreground">Loading rooms...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
+    );
   }
 
   return (

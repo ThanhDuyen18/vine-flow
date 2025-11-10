@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { SkeletonTable } from "@/components/ui/skeleton-table";
 
 const TaskList = ({ role }: { role: UserRole }) => {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -35,7 +36,7 @@ const TaskList = ({ role }: { role: UserRole }) => {
   }, []);
 
   if (loading) {
-    return <div className="text-muted-foreground">Loading tasks...</div>;
+    return <SkeletonTable rows={8} columns={6} />;
   }
 
   const getInitials = (firstName?: string, lastName?: string) => {

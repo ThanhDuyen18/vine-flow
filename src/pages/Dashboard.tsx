@@ -15,9 +15,11 @@ import {
 import { getUserRole, getCurrentUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/lib/auth";
+import { SkeletonStatCard } from "@/components/ui/skeleton-card";
 
 const Dashboard = () => {
   const [role, setRole] = useState<UserRole>('staff');
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalTasks: 0,
     completedTasks: 0,
@@ -29,19 +31,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadDashboard = async () => {
-      const user = await getCurrentUser();
-      if (!user) return;
+      try {
+        const user = await getCurrentUser();
+        if (!user) return;
 
-      const userRole = await getUserRole(user.id);
-      setRole(userRole);
+        const userRole = await getUserRole(user.id);
+        setRole(userRole);
 
-      // Load stats based on role
-      if (userRole === 'staff') {
-        await loadStaffStats(user.id);
-      } else if (userRole === 'leader') {
-        await loadLeaderStats(user.id);
-      } else if (userRole === 'admin') {
-        await loadAdminStats();
+        // Load stats based on role
+        if (userRole === 'staff') {
+          await loadStaffStats(user.id);
+        } else if (userRole === 'leader') {
+          await loadLeaderStats(user.id);
+        } else if (userRole === 'admin') {
+          await loadAdminStats();
+        }
+      } finally {
+        setLoading(false);
       }
     };
     loadDashboard();
@@ -122,6 +128,27 @@ const Dashboard = () => {
   const taskCompletionRate = stats.totalTasks > 0 
     ? Math.round((stats.completedTasks / stats.totalTasks) * 100) 
     : 0;
+
+  if (loading) {
+    return (
+      <DashboardLayout role={role}>
+        <div className="space-y-6 animate-fade-in pb-20 md:pb-6">
+          <div className="mb-2">
+            <h2 className="text-4xl font-heading font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+              Dashboard
+            </h2>
+            <p className="text-muted-foreground mt-2">Welcome back! Here's your overview</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout role={role}>

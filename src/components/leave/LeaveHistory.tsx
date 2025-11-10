@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { SkeletonTable } from "@/components/ui/skeleton-table";
 
 const LeaveHistory = ({ role }: { role: UserRole }) => {
   const [leaves, setLeaves] = useState<any[]>([]);
@@ -113,7 +114,7 @@ const LeaveHistory = ({ role }: { role: UserRole }) => {
   };
 
   if (loading) {
-    return <div className="text-muted-foreground">Loading leave history...</div>;
+    return <SkeletonTable rows={6} columns={role === 'leader' || role === 'admin' ? 7 : 5} />;
   }
 
   return (

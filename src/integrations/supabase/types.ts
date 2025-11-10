@@ -271,6 +271,48 @@ export type Database = {
           },
         ]
       }
+      salaries: {
+        Row: {
+          base_salary: number
+          bonus: number | null
+          created_at: string
+          deductions: number | null
+          hours_worked: number | null
+          id: string
+          month: string
+          notes: string | null
+          total_salary: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_salary: number
+          bonus?: number | null
+          created_at?: string
+          deductions?: number | null
+          hours_worked?: number | null
+          id?: string
+          month: string
+          notes?: string | null
+          total_salary?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_salary?: number
+          bonus?: number | null
+          created_at?: string
+          deductions?: number | null
+          hours_worked?: number | null
+          id?: string
+          month?: string
+          notes?: string | null
+          total_salary?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       shifts: {
         Row: {
           created_at: string

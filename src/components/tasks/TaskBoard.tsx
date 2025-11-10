@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import TaskCard from "./TaskCard";
 import CreateTaskDialog from "./CreateTaskDialog";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Task {
   id: string;
@@ -99,7 +100,21 @@ const TaskBoard = ({ role }: { role: UserRole }) => {
   };
 
   if (loading) {
-    return <div className="text-muted-foreground">Loading tasks...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i} className="bg-card/50">
+            <CardHeader className="pb-3">
+              <Skeleton className="h-5 w-24" />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   }
 
   return (
