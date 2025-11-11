@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import TaskCard from "./TaskCard";
 import CreateTaskDialog from "./CreateTaskDialog";
+import EditTaskDialog from "./EditTaskDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -35,6 +36,8 @@ const TaskBoard = ({ role }: { role: UserRole }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const { toast } = useToast();
 
   const fetchTasks = async () => {
@@ -142,11 +145,15 @@ const TaskBoard = ({ role }: { role: UserRole }) => {
                 .filter(task => task.status === status.value)
                 .map(task => (
                   <TaskCard
-                    key={task.id}
-                    task={task}
-                    onStatusChange={handleStatusChange}
-                    role={role}
-                  />
+                  key={task.id}
+                  task={task}
+                  onStatusChange={handleStatusChange}
+                  onTaskClick={(task) => {
+                    setSelectedTask(task);
+                    setEditDialogOpen(true);
+                  }}
+                  role={role}
+                />
                 ))}
             </CardContent>
           </Card>
@@ -157,6 +164,12 @@ const TaskBoard = ({ role }: { role: UserRole }) => {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         onTaskCreated={fetchTasks}
+      />
+      <EditTaskDialog
+        task={selectedTask}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onTaskUpdated={fetchTasks}
       />
     </div>
   );

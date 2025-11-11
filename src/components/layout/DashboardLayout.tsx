@@ -25,9 +25,10 @@ import {
   Clock,
   Settings,
   Menu
-} from "lucide-react";
+ } from "lucide-react";
 import { getCurrentUser, getUserProfile, signOut, UserRole, getUserRole } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -115,6 +116,7 @@ const DashboardLayout = ({ children, role = 'staff' }: DashboardLayoutProps) => 
           </div>
 
           <div className="ml-auto flex items-center gap-4">
+            <NotificationBell />
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>

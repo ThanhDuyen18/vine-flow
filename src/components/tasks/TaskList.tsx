@@ -7,31 +7,34 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { SkeletonTable } from "@/components/ui/skeleton-table";
+import EditTaskDialog from "./EditTaskDialog";
 
 const TaskList = ({ role }: { role: UserRole }) => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+
+  const fetchTasks = async () => {
+    try {
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTasks(data || []);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const user = await getCurrentUser();
-        if (!user) return;
-
-        const { data, error } = await supabase
-          .from('tasks')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setTasks(data || []);
-      } catch (error) {
-        console.error('Error fetching tasks:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTasks();
   }, []);
 
@@ -58,7 +61,14 @@ const TaskList = ({ role }: { role: UserRole }) => {
         </TableHeader>
         <TableBody>
           {tasks.map((task) => (
-            <TableRow key={task.id}>
+            <TableRow 
+              key={task.id} 
+              className="cursor-pointer hover:bg-secondary/50"
+              onClick={() => {
+                setSelectedTask(task);
+                setEditDialogOpen(true);
+              }}
+            >
               <TableCell>
                 <div>
                   <p className="font-medium">{task.title}</p>
@@ -88,6 +98,12 @@ const TaskList = ({ role }: { role: UserRole }) => {
           ))}
         </TableBody>
       </Table>
+      <EditTaskDialog
+        task={selectedTask}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onTaskUpdated={fetchTasks}
+      />
     </div>
   );
 };

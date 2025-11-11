@@ -8,6 +8,7 @@ import { format } from "date-fns";
 interface TaskCardProps {
   task: any;
   onStatusChange: (taskId: string, newStatus: string) => void;
+  onTaskClick: (task: any) => void;
   role: UserRole;
 }
 
@@ -18,13 +19,16 @@ const priorityColors = {
   urgent: 'bg-red-500/10 text-red-500'
 };
 
-const TaskCard = ({ task, onStatusChange, role }: TaskCardProps) => {
+const TaskCard = ({ task, onStatusChange, onTaskClick, role }: TaskCardProps) => {
   const getInitials = (firstName?: string, lastName?: string) => {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
   return (
-    <Card className="p-4 shadow-medium hover:shadow-strong transition-smooth cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary">
+    <Card 
+      className="p-4 shadow-medium hover:shadow-strong transition-smooth cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary"
+      onClick={() => onTaskClick(task)}
+    >
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-smooth">{task.title}</h4>
