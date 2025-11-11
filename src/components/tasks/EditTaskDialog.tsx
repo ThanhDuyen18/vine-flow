@@ -42,7 +42,7 @@ const EditTaskDialog = ({ task, open, onOpenChange, onTaskUpdated }: EditTaskDia
       setPriority(task.priority);
       setStatus(task.status);
       setDeadline(task.deadline || "");
-      setAssigneeId(task.assignee_id || "");
+      setAssigneeId(task.assignee_id || "unassigned");
       fetchUsers();
     }
   }, [task, open]);
@@ -71,7 +71,7 @@ const EditTaskDialog = ({ task, open, onOpenChange, onTaskUpdated }: EditTaskDia
           priority: priority as 'low' | 'medium' | 'high' | 'urgent',
           status: status as 'todo' | 'in_progress' | 'review' | 'done',
           deadline: deadline || null,
-          assignee_id: assigneeId || null,
+          assignee_id: assigneeId === 'unassigned' ? null : assigneeId || null,
         })
         .eq('id', task.id);
 
@@ -186,7 +186,7 @@ const EditTaskDialog = ({ task, open, onOpenChange, onTaskUpdated }: EditTaskDia
                 <SelectValue placeholder="Select user" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Unassigned</SelectItem>
+                <SelectItem value="unassigned">Unassigned</SelectItem>
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.first_name} {user.last_name}
