@@ -148,7 +148,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t bg-card">
         <div className="container mx-auto px-4 py-8 text-center text-muted-foreground">
-          <p>© 2025 Vine CRM. Built with ❤️ for modern teams.</p>
+          <p>© 2025 Vine CRM. by Thanh Duyen</p>
         </div>
       </footer>
     </div>
