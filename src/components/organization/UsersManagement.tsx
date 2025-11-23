@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import CreateUserDialog from "./CreateUserDialog";
 
 const UsersManagement = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -45,6 +46,10 @@ const UsersManagement = () => {
   const getInitials = (firstName?: string, lastName?: string) => {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
+  const handleUserCreated = () => {
+    setLoading(true);
+    fetchUsers();
+  };
 
   if (loading) {
     return <div className="text-muted-foreground">Loading users...</div>;
@@ -53,10 +58,7 @@ const UsersManagement = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        <CreateUserDialog onUserCreated={handleUserCreated} />
       </div>
 
       <div className="border rounded-lg">

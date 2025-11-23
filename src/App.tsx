@@ -14,6 +14,7 @@ import Organization from "./pages/Organization";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

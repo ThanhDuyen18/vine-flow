@@ -85,6 +85,7 @@ const DashboardLayout = ({ children, role = 'staff' }: DashboardLayoutProps) => 
     { icon: CheckSquare, label: "Tasks", path: "/tasks" },
     { icon: Calendar, label: "Meetings", path: "/meeting-rooms" },
     { icon: FileText, label: "Leave", path: "/leave" },
+    
   ];
 
   if (userRole === 'admin') {

@@ -246,7 +246,10 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30">
+              <button 
+                  className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30"
+                  onClick={() => navigate("/Attendance")} // <--- DÒNG CẦN THÊM
+              >
                 <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth">
                   <Clock className="h-6 w-6 text-primary" />
                 </div>
@@ -254,7 +257,10 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">Record attendance</p>
               </button>
               
-              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30">
+              <button 
+                  className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30"
+                  onClick={() => navigate("/Tasks")} // <--- DÒNG CẦN THÊM
+              >
                 <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
@@ -262,7 +268,10 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">Add new task</p>
               </button>
               
-              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30">
+              <button 
+                  className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30"
+                  onClick={() => navigate("/meeting-rooms")} // <--- DÒNG CẦN THÊM
+              >
                 <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth">
                   <Calendar className="h-6 w-6 text-primary" />
                 </div>
@@ -288,7 +297,7 @@ const Dashboard = () => {
                 <div className="w-2 h-2 mt-2 rounded-full bg-primary animate-pulse-glow" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">System initialized</p>
-                  <p className="text-xs text-muted-foreground mt-1">Welcome to Vine CRM</p>
+                  <p className="text-xs text-muted-foreground mt-1">Welcome to Vine HRM</p>
                 </div>
               </div>
             </div>

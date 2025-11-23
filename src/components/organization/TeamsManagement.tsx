@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
+import CreateTeamDialog from "./CreateTeamDialog"; 
 
 const TeamsManagement = () => {
   const [teams, setTeams] = useState<any[]>([]);
@@ -28,6 +29,11 @@ const TeamsManagement = () => {
       setLoading(false);
     }
   };
+
+  const handleTeamCreated = () => {
+    setLoading(true);
+    fetchTeams();
+  };
 
   if (loading) {
     return <div className="text-muted-foreground">Loading teams...</div>;
