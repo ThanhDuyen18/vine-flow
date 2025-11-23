@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -18,6 +19,7 @@ import { UserRole } from "@/lib/auth";
 import { SkeletonStatCard } from "@/components/ui/skeleton-card";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState<UserRole>('staff');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -51,7 +53,7 @@ const Dashboard = () => {
       }
     };
     loadDashboard();
-  }, []);
+  }, [navigate]);
 
   const loadStaffStats = async (userId: string) => {
     // Load tasks
@@ -244,7 +246,9 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30">
+              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30"
+              onClick={() => navigate("/Attendance")}
+              >
                 <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth">
                   <Clock className="h-6 w-6 text-primary" />
                 </div>
@@ -253,14 +257,18 @@ const Dashboard = () => {
               </button>
               
               <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30">
-                <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth">
+                <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth"
+                onClick={() => navigate("/Tasks")}
+                >
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
                 <h4 className="font-semibold mt-4 mb-1">Create Task</h4>
                 <p className="text-sm text-muted-foreground">Add new task</p>
               </button>
               
-              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30">
+              <button className="group p-6 rounded-lg border-2 border-border hover:border-primary transition-smooth text-left hover:shadow-medium bg-gradient-to-br from-card to-secondary/30"
+              onClick={() => navigate("/MeetingRooms")}
+              >
                 <div className="p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-smooth">
                   <Calendar className="h-6 w-6 text-primary" />
                 </div>
@@ -286,7 +294,7 @@ const Dashboard = () => {
                 <div className="w-2 h-2 mt-2 rounded-full bg-primary animate-pulse-glow" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">System initialized</p>
-                  <p className="text-xs text-muted-foreground mt-1">Welcome to Vine CRM</p>
+                  <p className="text-xs text-muted-foreground mt-1">Welcome to Vine HRM</p>
                 </div>
               </div>
             </div>
