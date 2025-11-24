@@ -78,3 +78,49 @@ export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
   return { error };
 };
+
+export const checkUserApprovalStatus = async (userId: string): Promise<{ is_approved: boolean; approval_rejected: boolean; rejection_reason?: string }> => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('is_approved, approval_rejected, rejection_reason')
+    .eq('id', userId)
+    .single();
+
+  if (error || !data) {
+    return { is_approved: false, approval_rejected: false };
+  }
+
+  return {
+    is_approved: data.is_approved || false,
+    approval_rejected: data.approval_rejected || false,
+    rejection_reason: data.rejection_reason || undefined
+  };
+};
+
+export const approveUser = async (userId: string): Promise<{ error?: any }> => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      is_approved: true,
+      approval_date: new Date().toISOString(),
+      approval_rejected: false,
+      rejection_reason: null
+    })
+    .eq('id', userId);
+
+  return { error };
+};
+
+export const rejectUser = async (userId: string, reason: string): Promise<{ error?: any }> => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      is_approved: false,
+      approval_rejected: true,
+      rejection_reason: reason,
+      approval_date: new Date().toISOString()
+    })
+    .eq('id', userId);
+
+  return { error };
+};
