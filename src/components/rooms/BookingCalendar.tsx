@@ -29,6 +29,22 @@ const BookingCalendar = ({ role }: { role: UserRole }) => {
 
       if (error) throw error;
       setBookings(data || []);
+
+      if (data && data.length > 0) {
+        const uniqueUserIds = [...new Set(data.map(b => b.user_id))];
+        const { data: creatorData } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name, avatar_url')
+          .in('id', uniqueUserIds);
+
+        if (creatorData) {
+          const creatorMap = new Map();
+          creatorData.forEach(creator => {
+            creatorMap.set(creator.id, creator);
+          });
+          setCreatorInfo(creatorMap);
+        }
+      }
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
