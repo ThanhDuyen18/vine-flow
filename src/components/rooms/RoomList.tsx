@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, MapPin, Users, Monitor } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import CreateRoomDialog from "./CreateRoomDialog";
+import RoomSearchFilter from "./RoomSearchFilter";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 
 const RoomList = ({ role }: { role: UserRole }) => {
