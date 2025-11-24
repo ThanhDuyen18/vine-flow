@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AttendanceWidget from "@/components/attendance/AttendanceWidget";
+import AdminAttendanceView from "@/components/attendance/AdminAttendanceView";
 import { getUserRole, getCurrentUser } from "@/lib/auth";
 import { UserRole } from "@/lib/auth";
 
@@ -24,12 +25,20 @@ const Attendance = () => {
           <h2 className="text-4xl font-heading font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
             Attendance
           </h2>
-          <p className="text-muted-foreground mt-2">Track your work hours and attendance</p>
+          <p className="text-muted-foreground mt-2">
+            {role === 'admin' ? 'View and manage attendance records for all employees' : 'Track your work hours and attendance'}
+          </p>
         </div>
 
-        <div className="shadow-strong rounded-lg">
-          <AttendanceWidget />
-        </div>
+        {role === 'admin' ? (
+          <div className="shadow-strong rounded-lg">
+            <AdminAttendanceView />
+          </div>
+        ) : (
+          <div className="shadow-strong rounded-lg">
+            <AttendanceWidget />
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
