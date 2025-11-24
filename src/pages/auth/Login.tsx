@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { signIn, signUp, getCurrentUser } from "@/lib/auth";
+import { signIn, signUp, getCurrentUser, checkUserApprovalStatus } from "@/lib/auth";
 import { Leaf, Loader2 } from "lucide-react";
 
 const Login = () => {
