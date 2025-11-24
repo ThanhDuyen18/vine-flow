@@ -41,6 +41,33 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
     if (data) setRooms(data);
   };
 
+  const checkTimeConflict = async (roomId: string, startTime: string, endTime: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from('room_bookings')
+        .select('*')
+        .eq('room_id', roomId)
+        .eq('status', 'approved');
+
+      if (error) throw error;
+
+      const start = new Date(startTime).getTime();
+      const end = new Date(endTime).getTime();
+
+      const hasConflict = data?.some(booking => {
+        const existingStart = new Date(booking.start_time).getTime();
+        const existingEnd = new Date(booking.end_time).getTime();
+
+        return !(end <= existingStart || start >= existingEnd);
+      });
+
+      return hasConflict || false;
+    } catch (error) {
+      console.error('Error checking time conflict:', error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -48,6 +75,17 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
     try {
       const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
+
+      const hasConflict = await checkTimeConflict(roomId, startTime, endTime);
+      if (hasConflict) {
+        toast({
+          title: "Booking Conflict",
+          description: "This room is already booked for the selected time. Please choose a different time or room.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
 
       const { error } = await supabase.from('room_bookings').insert([{
         title,
