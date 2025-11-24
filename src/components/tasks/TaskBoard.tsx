@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import TaskCard from "./TaskCard";
+import TaskSearchFilter from "./TaskSearchFilter";
 import CreateTaskDialog from "./CreateTaskDialog";
 import EditTaskDialog from "./EditTaskDialog";
 import { useToast } from "@/hooks/use-toast";
