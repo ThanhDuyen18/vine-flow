@@ -399,56 +399,67 @@ const LeaveHistoryTabs = ({ role }: { role: UserRole }) => {
         {editingId ? (
           <Dialog open={!!editingId} onOpenChange={(open) => !open && setEditingId(null)}>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Leave Request</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="edit-start">Start Date</Label>
-                  <Input
-                    id="edit-start"
-                    type="date"
-                    value={editForm.startDate}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, startDate: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-end">End Date</Label>
-                  <Input
-                    id="edit-end"
-                    type="date"
-                    value={editForm.endDate}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, endDate: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-shift">Shift</Label>
-                  <Select value={editForm.shift} onValueChange={(value) => setEditForm(prev => ({ ...prev, shift: value }))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full">Full Day</SelectItem>
-                      <SelectItem value="am">Morning (AM)</SelectItem>
-                      <SelectItem value="pm">Afternoon (PM)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="edit-reason">Reason</Label>
-                  <Textarea
-                    id="edit-reason"
-                    value={editForm.reason}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, reason: e.target.value }))}
-                    rows={3}
-                  />
-                </div>
-                <div className="flex gap-2 justify-end">
-                  <Button variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
-                  <Button onClick={handleSaveEdit}>Save Changes</Button>
-                </div>
-              </div>
-            </DialogContent>
+  <DialogHeader>
+    <DialogTitle>Edit Leave Request</DialogTitle>
+    <DialogDescription>
+      Update the leave request information below.
+    </DialogDescription>
+  </DialogHeader>
+
+  <div className="space-y-4">
+    <div>
+      <Label htmlFor="edit-start">Start Date</Label>
+      <Input
+        id="edit-start"
+        type="date"
+        value={editForm.startDate ? editForm.startDate.slice(0, 10) : ""}
+        onChange={(e) => setEditForm(prev => ({ ...prev, startDate: e.target.value }))}
+      />
+    </div>
+
+    <div>
+      <Label htmlFor="edit-end">End Date</Label>
+      <Input
+        id="edit-end"
+        type="date"
+        value={editForm.endDate ? editForm.endDate.slice(0, 10) : ""}
+        onChange={(e) => setEditForm(prev => ({ ...prev, endDate: e.target.value }))}
+      />
+    </div>
+
+    <div>
+      <Label htmlFor="edit-shift">Shift</Label>
+      <Select value={editForm.shift} onValueChange={(value) =>
+        setEditForm(prev => ({ ...prev, shift: value }))
+      }>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="full">Full Day</SelectItem>
+          <SelectItem value="am">Morning (AM)</SelectItem>
+          <SelectItem value="pm">Afternoon (PM)</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div>
+      <Label htmlFor="edit-reason">Reason</Label>
+      <Textarea
+        id="edit-reason"
+        value={editForm.reason}
+        onChange={(e) => setEditForm(prev => ({ ...prev, reason: e.target.value }))}
+        rows={3}
+      />
+    </div>
+
+    <div className="flex gap-2 justify-end">
+      <Button variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
+      <Button onClick={handleSaveEdit}>Save Changes</Button>
+    </div>
+  </div>
+</DialogContent>
+
           </Dialog>
         ) : null}
 
