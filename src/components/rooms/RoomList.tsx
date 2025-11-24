@@ -13,6 +13,9 @@ const RoomList = ({ role }: { role: UserRole }) => {
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [capacityFilter, setCapacityFilter] = useState("all");
+  const [equipmentFilter, setEquipmentFilter] = useState("all");
 
   const fetchRooms = async () => {
     try {
