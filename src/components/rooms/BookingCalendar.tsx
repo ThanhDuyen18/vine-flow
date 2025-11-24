@@ -5,9 +5,11 @@ import { UserRole } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import CreateBookingDialog from "./CreateBookingDialog";
+import BookingDetailsDialog from "./BookingDetailsDialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const BookingCalendar = ({ role }: { role: UserRole }) => {
   const [bookings, setBookings] = useState<any[]>([]);
