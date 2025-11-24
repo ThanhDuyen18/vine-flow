@@ -55,14 +55,26 @@ const TaskCard = ({ task, onStatusChange, onTaskClick, role, onTaskDeleted }: Ta
   };
 
   return (
-    <Card 
-      className="p-4 shadow-medium hover:shadow-strong transition-smooth cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary"
+    <Card
+      className="p-4 shadow-medium hover:shadow-strong transition-smooth cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary relative"
       onClick={() => onTaskClick(task)}
     >
-      <div className="space-y-3">
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      </div>
+
+      <div className="space-y-3 pr-6">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-smooth">{task.title}</h4>
-          <Badge className={`${priorityColors[task.priority as keyof typeof priorityColors]} font-medium`}>
+          <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-smooth flex-1">{task.title}</h4>
+          <Badge className={`${priorityColors[task.priority as keyof typeof priorityColors]} font-medium flex-shrink-0`}>
             {task.priority}
           </Badge>
         </div>
