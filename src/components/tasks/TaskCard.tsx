@@ -1,15 +1,20 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, AlertCircle } from "lucide-react";
+import { Calendar, AlertCircle, Trash2 } from "lucide-react";
 import { UserRole } from "@/lib/auth";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface TaskCardProps {
   task: any;
   onStatusChange: (taskId: string, newStatus: string) => void;
   onTaskClick: (task: any) => void;
   role: UserRole;
+  onTaskDeleted?: () => void;
 }
 
 const priorityColors = {
