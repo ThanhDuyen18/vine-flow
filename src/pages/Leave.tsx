@@ -54,14 +54,14 @@ const Leave = () => {
         </div>
 
         <Tabs defaultValue="request" className="w-full">
-          <TabsList className="bg-secondary shadow-soft">
+          <TabsList className="bg-secondary shadow-soft flex-wrap">
             <TabsTrigger value="request" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">New Request</TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">History</TabsTrigger>
+            <TabsTrigger value="requests" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">My Requests</TabsTrigger>
           </TabsList>
           <TabsContent value="request" className="mt-6">
             <LeaveRequestForm />
           </TabsContent>
-          <TabsContent value="history" className="mt-6">
+          <TabsContent value="requests" className="mt-6">
             <LeaveHistory role={role} />
           </TabsContent>
         </Tabs>

@@ -19,99 +19,133 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [validationError, setValidationError] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
+      resetForm();
       fetchRooms();
     }
   }, [open]);
 
   const fetchRooms = async () => {
-    const { data } = await supabase
-      .from('meeting_rooms')
-      .select('id, name')
-      .eq('is_active', true)
-      .order('name');
-    
-    if (data) setRooms(data);
-  };
-
-  const checkTimeConflict = async (roomId: string, startTime: string, endTime: string): Promise<boolean> => {
     try {
       const { data, error } = await supabase
-        .from('room_bookings')
-        .select('*')
-        .eq('room_id', roomId)
-        .eq('status', 'approved');
-
+        .from('meeting_rooms')
+        .select('id, name, capacity')
+        .eq('is_active', true)
+        .order('name');
+      
       if (error) throw error;
-
-      const start = new Date(startTime).getTime();
-      const end = new Date(endTime).getTime();
-
-      const hasConflict = data?.some(booking => {
-        const existingStart = new Date(booking.start_time).getTime();
-        const existingEnd = new Date(booking.end_time).getTime();
-
-        return !(end <= existingStart || start >= existingEnd);
-      });
-
-      return hasConflict || false;
+      if (data) setRooms(data);
     } catch (error) {
-      console.error('Error checking time conflict:', error);
+      console.error('Error fetching rooms:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load rooms",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const validateForm = (): boolean => {
+    setValidationError("");
+
+    if (!title.trim()) {
+      setValidationError("Meeting title is required");
       return false;
     }
+
+    if (!roomId) {
+      setValidationError("Please select a room");
+      return false;
+    }
+
+    if (!startDate || !startTime) {
+      setValidationError("Start date and time are required");
+      return false;
+    }
+
+    if (!endDate || !endTime) {
+      setValidationError("End date and time are required");
+      return false;
+    }
+
+    const startDateTime = new Date(`${startDate}T${startTime}`);
+    const endDateTime = new Date(`${endDate}T${endTime}`);
+
+    if (startDateTime >= endDateTime) {
+      setValidationError("End time must be after start time");
+      return false;
+    }
+
+    if (startDateTime < new Date()) {
+      setValidationError("Cannot book for past dates/times");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
       const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const hasConflict = await checkTimeConflict(roomId, startTime, endTime);
-      if (hasConflict) {
-        toast({
-          title: "Booking Conflict",
-          description: "This room is already booked for the selected time. Please choose a different time or room.",
-          variant: "destructive"
-        });
-        setLoading(false);
+      const startDateTime = `${startDate}T${startTime}:00`;
+      const endDateTime = `${endDate}T${endTime}:00`;
+
+      const { error } = await supabase.from('room_bookings').insert([{
+        title: title.trim(),
+        description: description.trim() || null,
+        room_id: roomId,
+        user_id: user.id,
+        start_time: startDateTime,
+        end_time: endDateTime,
+        status: 'confirmed'
+      }]);
+
+      if (error) {
+        if (error.message.includes('overlapping') || error.message.includes('conflict')) {
+          toast({
+            title: "Booking Conflict",
+            description: "This room is already booked for the selected time. Please choose a different time or room.",
+            variant: "destructive"
+          });
+        } else {
+          throw error;
+        }
         return;
       }
 
-      const { error } = await supabase.from('room_bookings').insert([{
-        title,
-        description: description || null,
-        room_id: roomId,
-        user_id: user.id,
-        start_time: startTime,
-        end_time: endTime,
-        status: 'pending'
-      }]);
-
-      if (error) throw error;
-
       toast({
         title: "Success",
-        description: "Booking created successfully"
+        description: "Room booked successfully"
       });
 
       onBookingCreated();
       onOpenChange(false);
       resetForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating booking:', error);
       toast({
         title: "Error",
-        description: "Failed to create booking",
+        description: error.message || "Failed to create booking",
         variant: "destructive"
       });
     } finally {
@@ -123,83 +157,128 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
     setTitle("");
     setDescription("");
     setRoomId("");
+    setStartDate("");
     setStartTime("");
+    setEndDate("");
     setEndTime("");
+    setValidationError("");
   };
+
+  const selectedRoom = rooms.find(r => r.id === roomId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Booking</DialogTitle>
+          <DialogTitle>Book Meeting Room</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {validationError && (
+            <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+              {validationError}
+            </div>
+          )}
+
           <div>
             <Label htmlFor="title">Meeting Title *</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              required
+              placeholder="e.g., Team Meeting"
+              disabled={loading}
             />
           </div>
 
           <div>
             <Label htmlFor="room">Room *</Label>
-            <Select value={roomId} onValueChange={setRoomId} required>
+            <Select value={roomId} onValueChange={setRoomId} disabled={loading}>
               <SelectTrigger>
-                <SelectValue placeholder="Select room" />
+                <SelectValue placeholder="Select a room" />
               </SelectTrigger>
               <SelectContent>
                 {rooms.map((room) => (
                   <SelectItem key={room.id} value={room.id}>
-                    {room.name}
+                    {room.name} (Capacity: {room.capacity})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <Label htmlFor="start">Start Time *</Label>
+              <Label htmlFor="startDate">Start Date *</Label>
               <Input
-                id="start"
-                type="datetime-local"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                required
+                id="startDate"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                disabled={loading}
               />
             </div>
 
             <div>
-              <Label htmlFor="end">End Time *</Label>
+              <Label htmlFor="startTime">Start Time *</Label>
               <Input
-                id="end"
-                type="datetime-local"
+                id="startTime"
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label htmlFor="endDate">End Date *</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="endTime">End Time *</Label>
+              <Input
+                id="endTime"
+                type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                required
+                disabled={loading}
               />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Description (Optional)</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Add meeting agenda or notes"
               rows={3}
+              disabled={loading}
             />
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          {selectedRoom && (
+            <div className="p-3 rounded-lg bg-secondary/50 text-sm">
+              <p className="font-medium">{selectedRoom.name}</p>
+              <p className="text-muted-foreground">Capacity: {selectedRoom.capacity} people</p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Booking"}
+              {loading ? "Booking..." : "Book Room"}
             </Button>
           </div>
         </form>
