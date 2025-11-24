@@ -85,6 +85,7 @@ const TaskBoard = ({ role }: { role: UserRole }) => {
 
   useEffect(() => {
     fetchTasks();
+    fetchUsers();
 
     const channel = supabase
       .channel('tasks-changes')
