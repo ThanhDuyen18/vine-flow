@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { SkeletonTable } from "@/components/ui/skeleton-table";
+import TaskSearchFilter from "./TaskSearchFilter";
 import EditTaskDialog from "./EditTaskDialog";
 
 const TaskList = ({ role }: { role: UserRole }) => {
