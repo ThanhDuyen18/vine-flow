@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, differenceInHours, differenceInMinutes } from "date-fns";
 import { Download, Search } from "lucide-react";
-import XLSX from 'xlsx';
+import * as XLSX from 'xlsx';
 
 interface AttendanceRecord {
   id: string;
