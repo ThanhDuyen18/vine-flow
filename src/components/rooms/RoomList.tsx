@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Plus, MapPin, Users, Monitor } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import CreateRoomDialog from "./CreateRoomDialog";
+import RoomSearchFilter from "./RoomSearchFilter";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 
 const RoomList = ({ role }: { role: UserRole }) => {
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [capacityFilter, setCapacityFilter] = useState("all");
+  const [equipmentFilter, setEquipmentFilter] = useState("all");
 
   const fetchRooms = async () => {
     try {
@@ -30,6 +34,46 @@ const RoomList = ({ role }: { role: UserRole }) => {
     }
   };
 
+  const getAllEquipment = (): string[] => {
+    const equipmentSet = new Set<string>();
+    rooms.forEach(room => {
+      if (room.equipment && Array.isArray(room.equipment)) {
+        room.equipment.forEach((item: string) => equipmentSet.add(item));
+      }
+    });
+    return Array.from(equipmentSet).sort();
+  };
+
+  const getFilteredRooms = () => {
+    return rooms.filter(room => {
+      const matchesSearch = !searchQuery ||
+        room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (room.location && room.location.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const matchesCapacity = capacityFilter === "all" || (() => {
+        switch (capacityFilter) {
+          case "1-5":
+            return room.capacity >= 1 && room.capacity <= 5;
+          case "6-10":
+            return room.capacity >= 6 && room.capacity <= 10;
+          case "11-20":
+            return room.capacity >= 11 && room.capacity <= 20;
+          case "20+":
+            return room.capacity > 20;
+          default:
+            return true;
+        }
+      })();
+
+      const matchesEquipment = equipmentFilter === "all" ||
+        (room.equipment && Array.isArray(room.equipment) && room.equipment.includes(equipmentFilter));
+
+      return matchesSearch && matchesCapacity && matchesEquipment;
+    });
+  };
+
+  const filteredRooms = getFilteredRooms();
+
   useEffect(() => {
     fetchRooms();
   }, []);
@@ -46,6 +90,16 @@ const RoomList = ({ role }: { role: UserRole }) => {
 
   return (
     <div className="space-y-4">
+      <RoomSearchFilter
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        capacityFilter={capacityFilter}
+        onCapacityChange={setCapacityFilter}
+        equipmentFilter={equipmentFilter}
+        onEquipmentChange={setEquipmentFilter}
+        availableEquipment={getAllEquipment()}
+      />
+
       {role === 'admin' && (
         <div className="flex justify-end">
           <Button onClick={() => setIsCreateOpen(true)}>
@@ -56,7 +110,7 @@ const RoomList = ({ role }: { role: UserRole }) => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rooms.map((room) => (
+        {filteredRooms.map((room) => (
           <Card key={room.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
