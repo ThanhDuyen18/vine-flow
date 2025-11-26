@@ -38,6 +38,9 @@ const MeetingRooms = () => {
             <TabsTrigger value="calendar" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Bookings</TabsTrigger>
             <TabsTrigger value="rooms" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Rooms</TabsTrigger>
             <TabsTrigger value="my-bookings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">My Bookings</TabsTrigger>
+            {(role === 'admin' || role === 'leader') && (
+              <TabsTrigger value="approvals" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Approvals</TabsTrigger>
+            )}
           </TabsList>
           <TabsContent value="schedule" className="mt-6">
             <BookingCalendarView />
@@ -51,6 +54,11 @@ const MeetingRooms = () => {
           <TabsContent value="my-bookings" className="mt-6">
             <MyBookings />
           </TabsContent>
+          {(role === 'admin' || role === 'leader') && (
+            <TabsContent value="approvals" className="mt-6">
+              <AdminApprovalView />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </DashboardLayout>
