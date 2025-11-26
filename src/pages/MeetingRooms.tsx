@@ -31,12 +31,16 @@ const MeetingRooms = () => {
           <p className="text-muted-foreground mt-2">Book and manage meeting rooms</p>
         </div>
 
-        <Tabs defaultValue="calendar" className="w-full">
+        <Tabs defaultValue="schedule" className="w-full">
           <TabsList className="bg-secondary shadow-soft">
-            <TabsTrigger value="calendar" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Calendar</TabsTrigger>
+            <TabsTrigger value="schedule" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Schedule</TabsTrigger>
+            <TabsTrigger value="calendar" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Bookings</TabsTrigger>
             <TabsTrigger value="rooms" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Rooms</TabsTrigger>
             <TabsTrigger value="my-bookings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">My Bookings</TabsTrigger>
           </TabsList>
+          <TabsContent value="schedule" className="mt-6">
+            <BookingCalendarView />
+          </TabsContent>
           <TabsContent value="calendar" className="mt-6">
             <BookingCalendar role={role} />
           </TabsContent>
