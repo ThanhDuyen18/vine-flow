@@ -5,6 +5,7 @@ import { UserRole } from "@/lib/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoomList from "@/components/rooms/RoomList";
 import BookingCalendar from "@/components/rooms/BookingCalendar";
+import BookingCalendarView from "@/components/rooms/BookingCalendarView";
 import MyBookings from "@/components/rooms/MyBookings";
 
 const MeetingRooms = () => {
