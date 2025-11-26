@@ -160,7 +160,7 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       resetForm();
     } catch (error: any) {
       const errorMessage = error?.message || error?.error_description || "Failed to create booking";
-      console.error('Error creating booking:', errorMessage, error);
+      console.error('Error creating booking:', errorMessage);
       toast({
         title: "Error",
         description: errorMessage,
