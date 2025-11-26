@@ -126,7 +126,7 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
         user_id: user.id,
         start_time: startDateTime,
         end_time: endDateTime,
-        status: 'confirmed'
+        status: 'pending'
       }]);
 
       if (error) {
