@@ -130,15 +130,22 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       }]);
 
       if (error) {
-        console.error('Booking error details:', error);
-        if (error.message.includes('overlapping') || error.message.includes('conflict') || error.code === '23P01') {
+        const errorMsg = error?.message || 'Unknown error';
+        const errorCode = error?.code || '';
+        console.error('Booking error:', errorCode, errorMsg);
+
+        if (errorMsg.includes('overlapping') || errorMsg.includes('conflict') || errorCode === '23P01') {
           toast({
             title: "Booking Conflict",
             description: "This room is already booked for the selected time. Please choose a different time or room.",
             variant: "destructive"
           });
         } else {
-          throw error;
+          toast({
+            title: "Error",
+            description: errorMsg || "Failed to create booking",
+            variant: "destructive"
+          });
         }
         return;
       }
