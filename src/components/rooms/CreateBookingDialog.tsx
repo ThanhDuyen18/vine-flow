@@ -47,7 +47,7 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
         .select('id, name, capacity')
         .eq('is_active', true)
         .order('name');
-      
+
       if (error) throw error;
       if (data) setRooms(data);
     } catch (error) {
@@ -59,6 +59,40 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       });
     }
   };
+
+  const checkAvailability = async (room: string, start: string, startT: string) => {
+    if (!room || !start || !startT) {
+      setConflictingBooking(null);
+      return;
+    }
+
+    setCheckingAvailability(true);
+    try {
+      const startDateTime = `${start}T${startT}`;
+      const endDateTime = `${endDate}T${endTime}`;
+
+      if (!endDateTime || !endTime) {
+        setConflictingBooking(null);
+        setCheckingAvailability(false);
+        return;
+      }
+
+      const conflict = await checkBookingAvailability(room, startDateTime, endDateTime);
+      setConflictingBooking(conflict);
+    } catch (error) {
+      console.error('Error checking availability:', error);
+    } finally {
+      setCheckingAvailability(false);
+    }
+  };
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      checkAvailability(roomId, startDate, startTime);
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [roomId, startDate, startTime, endDate, endTime]);
 
   const validateForm = (): boolean => {
     setValidationError("");
