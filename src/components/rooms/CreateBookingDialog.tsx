@@ -224,6 +224,7 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
     setEndDate("");
     setEndTime("");
     setValidationError("");
+    setConflictingBooking(null);
   };
 
   const selectedRoom = rooms.find(r => r.id === roomId);
