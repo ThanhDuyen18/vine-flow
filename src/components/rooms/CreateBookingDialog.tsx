@@ -139,6 +139,11 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       return false;
     }
 
+    if (conflictingBooking) {
+      setValidationError(`Room already booked: "${conflictingBooking.title}" from ${formatTimeRange(conflictingBooking.start_time, conflictingBooking.end_time)}`);
+      return false;
+    }
+
     return true;
   };
 
