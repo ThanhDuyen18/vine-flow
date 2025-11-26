@@ -29,6 +29,8 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [validationError, setValidationError] = useState("");
+  const [conflictingBooking, setConflictingBooking] = useState<ConflictingBooking | null>(null);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
