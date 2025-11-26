@@ -130,7 +130,8 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       }]);
 
       if (error) {
-        if (error.message.includes('overlapping') || error.message.includes('conflict')) {
+        console.error('Booking error details:', error);
+        if (error.message.includes('overlapping') || error.message.includes('conflict') || error.code === '23P01') {
           toast({
             title: "Booking Conflict",
             description: "This room is already booked for the selected time. Please choose a different time or room.",
