@@ -86,8 +86,17 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       return false;
     }
 
-    if (startDateTime < new Date()) {
-      setValidationError("Cannot book for past dates/times");
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfSelectedDay = new Date(startDate);
+
+    if (startOfSelectedDay < startOfToday) {
+      setValidationError("Cannot book for past dates");
+      return false;
+    }
+
+    if (startOfSelectedDay.getTime() === startOfToday.getTime() && startDateTime < now) {
+      setValidationError("Cannot book for past times today");
       return false;
     }
 
