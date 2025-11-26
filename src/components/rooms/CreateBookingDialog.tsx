@@ -242,6 +242,20 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
             </div>
           )}
 
+          {conflictingBooking && !validationError && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Conflict Detected!</strong>
+                <div className="mt-2 text-xs">
+                  <div><strong>{conflictingBooking.title}</strong></div>
+                  <div>{formatTimeRange(conflictingBooking.start_time, conflictingBooking.end_time)}</div>
+                  <div>Booked by: {conflictingBooking.user_name}</div>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div>
             <Label htmlFor="title">Meeting Title *</Label>
             <Input
