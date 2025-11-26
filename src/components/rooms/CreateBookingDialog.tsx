@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentUser } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { checkBookingAvailability, ConflictingBooking, formatTimeRange } from "@/lib/booking-utils";
+import { AlertTriangle } from "lucide-react";
 
 interface CreateBookingDialogProps {
   open: boolean;
@@ -26,6 +29,8 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [validationError, setValidationError] = useState("");
+  const [conflictingBooking, setConflictingBooking] = useState<ConflictingBooking | null>(null);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -42,7 +47,7 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
         .select('id, name, capacity')
         .eq('is_active', true)
         .order('name');
-      
+
       if (error) throw error;
       if (data) setRooms(data);
     } catch (error) {
@@ -54,6 +59,40 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       });
     }
   };
+
+  const checkAvailability = async (room: string, start: string, startT: string) => {
+    if (!room || !start || !startT) {
+      setConflictingBooking(null);
+      return;
+    }
+
+    setCheckingAvailability(true);
+    try {
+      const startDateTime = `${start}T${startT}`;
+      const endDateTime = `${endDate}T${endTime}`;
+
+      if (!endDateTime || !endTime) {
+        setConflictingBooking(null);
+        setCheckingAvailability(false);
+        return;
+      }
+
+      const conflict = await checkBookingAvailability(room, startDateTime, endDateTime);
+      setConflictingBooking(conflict);
+    } catch (error) {
+      console.error('Error checking availability:', error);
+    } finally {
+      setCheckingAvailability(false);
+    }
+  };
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      checkAvailability(roomId, startDate, startTime);
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [roomId, startDate, startTime, endDate, endTime]);
 
   const validateForm = (): boolean => {
     setValidationError("");
@@ -86,8 +125,22 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       return false;
     }
 
-    if (startDateTime < new Date()) {
-      setValidationError("Cannot book for past dates/times");
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfSelectedDay = new Date(startDate);
+
+    if (startOfSelectedDay < startOfToday) {
+      setValidationError("Cannot book for past dates");
+      return false;
+    }
+
+    if (startOfSelectedDay.getTime() === startOfToday.getTime() && startDateTime < now) {
+      setValidationError("Cannot book for past times today");
+      return false;
+    }
+
+    if (conflictingBooking) {
+      setValidationError(`Room already booked: "${conflictingBooking.title}" from ${formatTimeRange(conflictingBooking.start_time, conflictingBooking.end_time)}`);
       return false;
     }
 
@@ -117,18 +170,26 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
         user_id: user.id,
         start_time: startDateTime,
         end_time: endDateTime,
-        status: 'confirmed'
+        status: 'pending'
       }]);
 
       if (error) {
-        if (error.message.includes('overlapping') || error.message.includes('conflict')) {
+        const errorMsg = error?.message || 'Unknown error';
+        const errorCode = error?.code || '';
+        console.error('Booking error:', errorCode, errorMsg);
+
+        if (errorMsg.includes('overlapping') || errorMsg.includes('conflict') || errorCode === '23P01') {
           toast({
             title: "Booking Conflict",
             description: "This room is already booked for the selected time. Please choose a different time or room.",
             variant: "destructive"
           });
         } else {
-          throw error;
+          toast({
+            title: "Error",
+            description: errorMsg || "Failed to create booking",
+            variant: "destructive"
+          });
         }
         return;
       }
@@ -142,10 +203,11 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
       onOpenChange(false);
       resetForm();
     } catch (error: any) {
-      console.error('Error creating booking:', error);
+      const errorMessage = error?.message || error?.error_description || "Failed to create booking";
+      console.error('Error creating booking:', errorMessage);
       toast({
         title: "Error",
-        description: error.message || "Failed to create booking",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -162,6 +224,7 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
     setEndDate("");
     setEndTime("");
     setValidationError("");
+    setConflictingBooking(null);
   };
 
   const selectedRoom = rooms.find(r => r.id === roomId);
@@ -177,6 +240,20 @@ const CreateBookingDialog = ({ open, onOpenChange, onBookingCreated }: CreateBoo
             <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
               {validationError}
             </div>
+          )}
+
+          {conflictingBooking && !validationError && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Conflict Detected!</strong>
+                <div className="mt-2 text-xs">
+                  <div><strong>{conflictingBooking.title}</strong></div>
+                  <div>{formatTimeRange(conflictingBooking.start_time, conflictingBooking.end_time)}</div>
+                  <div>Booked by: {conflictingBooking.user_name}</div>
+                </div>
+              </AlertDescription>
+            </Alert>
           )}
 
           <div>

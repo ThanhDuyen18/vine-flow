@@ -155,12 +155,15 @@ DECLARE
   v_admin_id uuid;
   v_user_name text;
 BEGIN
-  -- Get requester name
-  SELECT CONCAT(first_name, ' ', last_name) INTO v_user_name
+  -- Get requester name with defaults for NULL values
+  SELECT COALESCE(first_name, 'User') || ' ' || COALESCE(last_name, '') INTO v_user_name
   FROM profiles WHERE id = NEW.user_id;
-  
+
+  -- Trim extra spaces and provide fallback
+  v_user_name := TRIM(COALESCE(v_user_name, 'User'));
+
   -- Notify all admins and leaders
-  FOR v_admin_id IN 
+  FOR v_admin_id IN
     SELECT user_id FROM user_roles WHERE role IN ('admin', 'leader')
   LOOP
     PERFORM create_notification(
@@ -171,7 +174,7 @@ BEGIN
       '/meeting-rooms'
     );
   END LOOP;
-  
+
   RETURN NEW;
 END;
 $$;
